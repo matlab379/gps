@@ -94,3 +94,12 @@ MUJOCO_LOG.TXT
 # Experiment files
 experiments/*/data_files/
 experiments/*/log.txt
+
+#catkin
+src/gps_agent_pkg/catkin
+src/gps_agent_pkg/catkin_generated
+src/gps_agent_pkg/devel
+
+#doxygen
+html/
+

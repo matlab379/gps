@@ -41,6 +41,7 @@ using namespace std;
 bool Chain::init(ros::NodeHandle& n)
 {
 
+  ROS_INFO_STREAM_NAMED("chain","The chain is initialing");
   std::string robot_description;
    if (!ros::param::search(n.getNamespace(),"robot_description", robot_description)){
      ROS_ERROR_STREAM("Chain: No robot description (URDF) found on parameter server ("<<n.getNamespace()<<"/robot_description)");
@@ -49,9 +50,10 @@ bool Chain::init(ros::NodeHandle& n)
 
    // Construct an URDF model from the xml string
    urdf::Model urdf_model;
-   urdf_model.initString(robot_description);
+   urdf_model.initParam(robot_description);
    // Get a KDL tree from the robot URDF
-
+  
+  ROS_INFO_STREAM_NAMED("chain","The urdf is initialed succussfully");
   if (!kdl_parser::treeFromUrdfModel(urdf_model, kdl_tree_)){
     ROS_ERROR("Could not convert urdf into kdl tree");
     return false;
@@ -80,6 +82,7 @@ bool Chain::toKDL(const std::string &root_name, const std::string &tip_name, KDL
     return false;
   }
   chain = kdl_chain_;
+  ROS_INFO_STREAM_NAMED("chain","The chain is initialed succussfully");
   return true;
 }
 

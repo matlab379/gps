@@ -29,6 +29,7 @@ bool GPSBaxterPlugin::init(hardware_interface::EffortJointInterface *robot, ros:
 
     // Store the robot state.
     robot_ = robot;
+    ROS_INFO_STREAM_NAMED("hardware_interface","The GPSBaxterPlugin is initialing: check the robot_ is exited or not");
 
     // Create FK solvers.
     // Get the name of the root.

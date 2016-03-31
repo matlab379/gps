@@ -20,13 +20,26 @@
   <depend package="geometry_msgs"/>
   <depend package="tf"/>
   <depend package="pr2_controller_manager"/>
+  <depend package="controller_interface"/>
+  <depend package="controller_manager"/>
+  <depend package="hardware_interface"/>
+  <depend package="transmission_interface"/>
+  <depend package="moveit_visual_tools" />
+  <depend package="moveit_ros_planning_interface" />
+  <depend package="moveit_msgs" />
+  <depend package="trajectory_msgs" />
+  <depend package="baxter_core_msgs" />
+  <depend package="joint_limits_interface" />
 
   <rosdep name="eigen" />
 
   <export>
-    <pr2_controller_interface plugin="${prefix}/controller_plugins.xml" />
+    <pr2_controller_interface plugin="${prefix}/controller_pr2_plugins.xml" />
   </export>
-
+  
+  <export>
+    <controller_interface plugin="${prefix}/controller_baxter_plugins.xml" />
+  </export>
 </package>
 
 

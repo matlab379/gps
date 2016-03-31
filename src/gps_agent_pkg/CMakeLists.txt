@@ -54,7 +54,16 @@ set(DDP_FILES src/robotplugin.cpp
               src/trialcontroller.cpp
               src/encodersensor.cpp
               src/encoderfilter.cpp
-              src/util.cpp)
+              src/util.cpp
+	      src/baxter_control/arm_hardware_interface.cpp
+	      src/baxter_control/arm_simulator_interface.cpp
+	      src/baxter_control/baxter_hardware_interface.cpp
+	      src/baxter_control/baxter_to_csv.cpp
+	      src/baxter_control/baxter_utilities.cpp
+	      src/baxter_control/baxterplugin.cpp
+	      src/baxter_control/chain.cpp
+	      )
+
 
 # Include Caffe
 if (USE_CAFFE)
@@ -96,6 +105,10 @@ rosbuild_add_library(gps_agent_lib ${DDP_FILES})
 
 #rosbuild_add_executable(point_head src/point_head.cpp)
 #rosbuild_add_executable(torso src/torso.cpp)
+rosbuild_add_executable(baxter_hardware_interface src/baxter_control/arm_hardware_interface.cpp
+	      src/baxter_control/arm_simulator_interface.cpp
+	      src/baxter_control/baxter_hardware_interface.cpp
+	      src/baxter_control/baxter_utilities.cpp)
 
 # Include Caffe in controller
 if (USE_CAFFE)

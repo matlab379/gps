@@ -1,4 +1,4 @@
-#include "gps_agent_pkg/pr2plugin.h"
+#include "gps_agent_pkg/baxter_control/baxterplugin.h"
 #include "gps_agent_pkg/positioncontroller.h"
 #include "gps_agent_pkg/trialcontroller.h"
 #include "gps_agent_pkg/encodersensor.h"
@@ -7,7 +7,7 @@
 namespace gps_control {
 
 // Plugin constructor.
-GPSPR2Plugin::GPSPR2Plugin()
+GPSBaxterPlugin::GPSBaxterPlugin()
 {
     // Some basic variable initialization.
     controller_counter_ = 0;
@@ -15,14 +15,15 @@ GPSPR2Plugin::GPSPR2Plugin()
 }
 
 // Destructor.
-GPSPR2Plugin::~GPSPR2Plugin()
+GPSBaxterPlugin::~GPSBaxterPlugin()
 {
     // Nothing to do here, since all instance variables are destructed automatically.
 }
 
 // Initialize the object and store the robot state.
-bool GPSPR2Plugin::init(pr2_mechanism_model::RobotState* robot, ros::NodeHandle& n)
+bool GPSBaxterPlugin::init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle& n)
 {
+    ROS_INFO_STREAM_NAMED("hardware_interface","The GPSBaxterPlugin is initialing");
     // Variables.
     std::string root_name, active_tip_name, passive_tip_name;
 
@@ -46,22 +47,18 @@ bool GPSPR2Plugin::init(pr2_mechanism_model::RobotState* robot, ros::NodeHandle&
         return false;
     }
 
-    // Create active arm chain.
-    if(!active_arm_chain_.init(robot_, root_name, active_tip_name)) {
-        ROS_ERROR("Controller could not use the chain from '%s' to '%s'", root_name.c_str(), active_tip_name.c_str());
-        return false;
-    }
-
-    // Create passive arm chain.
-    if(!passive_arm_chain_.init(robot_, root_name, passive_tip_name)) {
-        ROS_ERROR("Controller could not use the chain from '%s' to '%s'", root_name.c_str(), passive_tip_name.c_str());
+    // Create arm chain.
+    if(!arm_chain_.init(n)) {
+        ROS_ERROR("Controller could not use the chain from parameter server to urdf model");
         return false;
     }
 
     // Create KDL chains, solvers, etc.
     // KDL chains.
-    passive_arm_chain_.toKDL(passive_arm_fk_chain_);
-    active_arm_chain_.toKDL(active_arm_fk_chain_);
+    // Create passive arm chain.
+    arm_chain_.toKDL(root_name, passive_tip_name, passive_arm_fk_chain_);
+    // Create active arm chain.
+    arm_chain_.toKDL(root_name, active_tip_name, active_arm_fk_chain_);
 
     // Pose solvers.
     passive_arm_fk_solver_.reset(new KDL::ChainFkSolverPos_recursive(passive_arm_fk_chain_));
@@ -85,10 +82,7 @@ bool GPSPR2Plugin::init(pr2_mechanism_model::RobotState* robot, ros::NodeHandle&
             break;
 
         // Push back the joint state and name.
-        pr2_mechanism_model::JointState* jointState = robot_->getJointState(joint_name);
-        active_arm_joint_state_.push_back(jointState);
-        if (jointState == NULL)
-            ROS_INFO_STREAM("jointState: " + joint_name + " is null");
+        active_arm_joint_state_.push_back(robot_->getHandle(joint_name));
 
         active_arm_joint_names_.push_back(joint_name);
 
@@ -115,10 +109,7 @@ bool GPSPR2Plugin::init(pr2_mechanism_model::RobotState* robot, ros::NodeHandle&
             break;
 
         // Push back the joint state and name.
-        pr2_mechanism_model::JointState* jointState = robot_->getJointState(joint_name);
-        passive_arm_joint_state_.push_back(jointState);
-        if (jointState == NULL)
-            ROS_INFO_STREAM("jointState: " + joint_name + " is null");
+        passive_arm_joint_state_.push_back(robot_->getHandle(joint_name));
         passive_arm_joint_names_.push_back(joint_name);
 
         // Increment joint index.
@@ -142,15 +133,15 @@ bool GPSPR2Plugin::init(pr2_mechanism_model::RobotState* robot, ros::NodeHandle&
     // will ask to use these FK solvers!
     initialize(n);
 
-    // Tell the PR2 controller manager that we initialized everything successfully.
+    // Tell the Baxter controller manager that we initialized everything successfully.
     return true;
 }
 
 // This is called by the controller manager before starting the controller.
-void GPSPR2Plugin::starting()
+void GPSBaxterPlugin::starting(const ros::Time& time)
 {
     // Get current time.
-    last_update_time_ = robot_->getTime();
+    last_update_time_ = time;
     controller_counter_ = 0;
 
     // Reset all the sensors. This is important for sensors that try to keep
@@ -170,16 +161,16 @@ void GPSPR2Plugin::starting()
 }
 
 // This is called by the controller manager before stopping the controller.
-void GPSPR2Plugin::stopping()
+void GPSBaxterPlugin::stopping(const ros::Time& time)
 {
     // Nothing to do here.
 }
 
 // This is the main update function called by the realtime thread when the controller is running.
-void GPSPR2Plugin::update()
+void GPSBaxterPlugin::update(const ros::Time& time, const ros::Duration& period)
 {
     // Get current time.
-    last_update_time_ = robot_->getTime();
+    last_update_time_ = time; 
 
     // Check if this is a controller step based on the current controller frequency.
     controller_counter_++;
@@ -194,34 +185,34 @@ void GPSPR2Plugin::update()
 
     // Store the torques.
     for (unsigned i = 0; i < active_arm_joint_state_.size(); i++)
-        active_arm_joint_state_[i]->commanded_effort_ = active_arm_torques_[i];
+        active_arm_joint_state_[i].setCommand(active_arm_torques_[i]);
 
     for (unsigned i = 0; i < passive_arm_joint_state_.size(); i++)
-        passive_arm_joint_state_[i]->commanded_effort_ = passive_arm_torques_[i];
+        passive_arm_joint_state_[i].setCommand(passive_arm_torques_[i]);
 }
 
 // Get current time.
-ros::Time GPSPR2Plugin::get_current_time() const
+ros::Time GPSBaxterPlugin::get_current_time() const
 {
     return last_update_time_;
 }
 
 // Get current encoder readings (robot-dependent).
-void GPSPR2Plugin::get_joint_encoder_readings(Eigen::VectorXd &angles, gps::ActuatorType arm) const
+void GPSBaxterPlugin::get_joint_encoder_readings(Eigen::VectorXd &angles, gps::ActuatorType arm) const
 {
     if (arm == gps::AUXILIARY_ARM)
     {
         if (angles.rows() != passive_arm_joint_state_.size())
             angles.resize(passive_arm_joint_state_.size());
         for (unsigned i = 0; i < angles.size(); i++)
-            angles(i) = passive_arm_joint_state_[i]->position_;
+            angles(i) = passive_arm_joint_state_[i].getPosition();
     }
     else if (arm == gps::TRIAL_ARM)
     {
         if (angles.rows() != active_arm_joint_state_.size())
             angles.resize(active_arm_joint_state_.size());
         for (unsigned i = 0; i < angles.size(); i++)
-            angles(i) = active_arm_joint_state_[i]->position_;
+            angles(i) = active_arm_joint_state_[i].getPosition();
     }
     else
     {
@@ -232,6 +223,6 @@ void GPSPR2Plugin::get_joint_encoder_readings(Eigen::VectorXd &angles, gps::Actu
 }
 
 // Register controller to pluginlib
-//PLUGINLIB_DECLARE_CLASS(gps_agent_pkg, GPSPR2Plugin, gps_control::GPSPR2Plugin, pr2_controller_interface::Controller)
-PLUGINLIB_EXPORT_CLASS(gps_control::GPSPR2Plugin, pr2_controller_interface::Controller)
+//PLUGINLIB_EXPORT_CLASS(gps_agent_pkg, GPSBaxterPlugin, gps_control::GPSBaxterPlugin, controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS(gps_control::GPSBaxterPlugin, controller_interface::ControllerBase)
 

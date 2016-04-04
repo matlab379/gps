@@ -125,6 +125,30 @@ bool GPSBaxterPlugin::init(hardware_interface::EffortJointInterface *robot, ros:
         return false;
     }
 
+
+    /********************************************************************************
+    * chang the code to make sure the order of the handle is suitable with the chain*
+    *********************************************************************************/
+   // Get joint handles for all of the joints in the chain
+    /*for(std::vector<KDL::Segment>::const_iterator it = passive_arm_fk_chain_.segments.begin();
+        it != passive_arm_fk_chain_.segments.end();
+        ++it)
+    {
+      passive_arm_joint_state_.push_back(robot->getHandle(it->getJoint().getName()));
+      passive_arm_joint_names_.push_back(it->getJoint().getName());
+    }
+
+    // Get joint handles for all of the joints in the chain
+    for(std::vector<KDL::Segment>::const_iterator it = active_arm_fk_chain_.segments.begin();
+        it != active_arm_fk_chain_.segments.end();
+        ++it)
+    {
+      active_arm_joint_state_.push_back(robot->getHandle(it->getJoint().getName()));
+      active_arm_joint_names_.push_back(it->getJoint().getName());
+    }*/
+
+
+
     // Allocate torques array.
     active_arm_torques_.resize(active_arm_fk_chain_.getNrOfJoints());
     passive_arm_torques_.resize(passive_arm_fk_chain_.getNrOfJoints());

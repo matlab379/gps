@@ -61,10 +61,7 @@ set(DDP_FILES src/robotplugin.cpp
 	      src/baxter_control/baxter_to_csv.cpp
 	      src/baxter_control/baxter_utilities.cpp
 	      src/baxter_control/baxterplugin.cpp
-	      src/baxter_control/chain.cpp
-	      )
-
-
+	      src/baxter_control/chain.cpp) 
 # Include Caffe
 if (USE_CAFFE)
     # add definitions for the C++ code

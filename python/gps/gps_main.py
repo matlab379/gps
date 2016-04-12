@@ -45,20 +45,25 @@ class GPSMain(object):
         Returns: None
         """
         itr_start = self._initialize(itr_load)
+########### ############ to execute without training ########### Brook ###########
+        self.executable = False
+        if self.executable:
+            while(self.executable):
+                self.agent.execute(self.algorithm.policy_opt.policy)
+        else:
+            for itr in range(itr_start, self._hyperparams['iterations']):
+                for cond in range(self._conditions):
+                    for i in range(self._hyperparams['num_samples']):
+                        self._take_sample(itr, cond, i)
 
-        for itr in range(itr_start, self._hyperparams['iterations']):
-            for cond in range(self._conditions):
-                for i in range(self._hyperparams['num_samples']):
-                    self._take_sample(itr, cond, i)
-
-            traj_sample_lists = [
-                self.agent.get_samples(cond, -self._hyperparams['num_samples'])
-                for cond in range(self._conditions)
-            ]
-            self._take_iteration(itr, traj_sample_lists)
-            pol_sample_lists = self._take_policy_samples()
-            self._log_data(itr, traj_sample_lists, pol_sample_lists)
-
+                traj_sample_lists = [
+                    self.agent.get_samples(cond, -self._hyperparams['num_samples'])
+                    for cond in range(self._conditions)
+                ]
+                self._take_iteration(itr, traj_sample_lists)
+                pol_sample_lists = self._take_policy_samples()
+                self._log_data(itr, traj_sample_lists, pol_sample_lists)
+#############################################################################################
         self._end()
 
     def _initialize(self, itr_load):

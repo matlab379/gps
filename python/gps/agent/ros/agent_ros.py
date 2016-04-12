@@ -56,22 +56,26 @@ class AgentROS(Agent):
 
     def _init_pubs_and_subs(self):
         self._trial_service = ServiceEmulator(
-            self._hyperparams['trial_command_topic'], TrialCommand,
-            self._hyperparams['sample_result_topic'], SampleResult
+            self._hyperparams['sample_result_topic'], SampleResult,
+            self._hyperparams['trial_command_topic'], TrialCommand
         )
         self._reset_service = ServiceEmulator(
-            self._hyperparams['reset_command_topic'], PositionCommand,
-            self._hyperparams['sample_result_topic'], SampleResult
+            self._hyperparams['sample_result_topic'], SampleResult,
+            self._hyperparams['reset_command_topic'], PositionCommand
         )
         self._relax_service = ServiceEmulator(
-            self._hyperparams['relax_command_topic'], RelaxCommand,
-            self._hyperparams['sample_result_topic'], SampleResult
+            self._hyperparams['sample_result_topic'], SampleResult,
+            self._hyperparams['relax_command_topic'], RelaxCommand
         )
         self._data_service = ServiceEmulator(
             self._hyperparams['data_request_topic'], DataRequest,
             self._hyperparams['sample_result_topic'], SampleResult
         )
-
+########### ############# a object to subscribe the tgt from agile pkg#####Brook###
+        self._tgt_subscribe = ServiceEmulator(
+            'tgt_request_topic', DataRequest
+        )
+#####################################################################################
     def _get_next_seq_id(self):
         self._seq_id = (self._seq_id + 1) % (2 ** 32)
         return self._seq_id
@@ -185,6 +189,51 @@ class AgentROS(Agent):
                 self._samples[condition].append(sample)
             return sample
 
+    def execute(self, policy):
+        """
+        Reset and execute a policy and collect a sample.
+        Args:
+            policy: A Policy object.
+        Returns:
+            sample: A Sample object.
+        """
+        if TfPolicy is not None:  # user has tf installed.
+            if isinstance(policy, TfPolicy):
+                self._init_tf(policy.dU)
+
+        #self.reset(condition)
+        # Generate noise.
+        noise = generate_noise(self.T, self.dU, self._hyperparams)
+
+        # Execute trial.
+        trial_command = TrialCommand()
+        trial_command.id = self._get_next_seq_id()
+        trial_command.controller = policy_to_msg(policy, noise)
+        trial_command.T = self.T
+        trial_command.id = self._get_next_seq_id()
+        trial_command.frequency = self._hyperparams['frequency']
+        ee_points = self._hyperparams['end_effector_points']
+        trial_command.ee_points = ee_points.reshape(ee_points.size).tolist()
+#### @todo: tgt command try ##########Brook####################################################
+        #trial_command.ee_points_tgt = self._tgt_subscribe.subscribe_and_wait()
+
+
+        trial_command.ee_points_tgt = \
+            self._hyperparams['ee_points_tgt'][0].tolist()
+
+        trial_command.state_datatypes = self._hyperparams['state_include']
+        trial_command.obs_datatypes = self._hyperparams['state_include']
+
+        if self.use_tf is False:
+            sample_msg = self._trial_service.publish_and_wait(
+                trial_command, timeout=self._hyperparams['trial_timeout']
+            )
+            sample = msg_to_sample(sample_msg, self)
+        else:
+            self._trial_service.publish(trial_command)
+            sample_msg = self.run_trial_tf(policy, time_to_run=self._hyperparams['trial_timeout'])
+            sample = msg_to_sample(sample_msg, self)
+###################################################################################################
     def run_trial_tf(self, policy, time_to_run=5):
         """ Run an async controller from a policy. The async controller receives observations from ROS subscribers
          and then uses them to publish actions."""

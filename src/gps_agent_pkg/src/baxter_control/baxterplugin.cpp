@@ -195,7 +195,7 @@ void GPSBaxterPlugin::stopping(const ros::Time& time)
 void GPSBaxterPlugin::update(const ros::Time& time, const ros::Duration& period)
 {
     // Get current time.
-    last_update_time_ = time; 
+    last_update_time_ = time;
 
     // Check if this is a controller step based on the current controller frequency.
     controller_counter_++;

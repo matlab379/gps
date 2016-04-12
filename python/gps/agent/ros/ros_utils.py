@@ -97,8 +97,9 @@ class ServiceEmulator(object):
         sub_topic: Subscriber topic.
         sub_type: Subscriber message type.
     """
-    def __init__(self, pub_topic, pub_type, sub_topic, sub_type):
-        self._pub = rospy.Publisher(pub_topic, pub_type)
+    def __init__(self, sub_topic, sub_type, pub_topic=None, pub_type=None):
+        if !pub_topic:
+            self._pub = rospy.Publisher(pub_topic, pub_type)
         self._sub = rospy.Subscriber(sub_topic, sub_type, self._callback)
 
         self._waiting = False
@@ -113,7 +114,7 @@ class ServiceEmulator(object):
         """ Publish a message without waiting for response. """
         self._pub.publish(pub_msg)
 
-    def publish_and_wait(self, pub_msg, timeout=5.0, poll_delay=0.01,
+    def publish_and_wait(self, pub_msg, timeout=999999999999999999999999995.0, poll_delay=0.01,
                          check_id=False):
         """
         Publish a message and wait for the response.
@@ -140,3 +141,27 @@ class ServiceEmulator(object):
             if time_waited > timeout:
                 raise TimeoutException(time_waited)
         return self._subscriber_msg
+##### a method to subscribe the msg of target: include the position and the orientation.###Brook###
+
+    def subscribe_and_wait(self, timeout=999999999999999999999999995.0, poll_delay=0.01):
+        """
+        Publish a message and wait for the response.
+        Args:
+            pub_msg: Message to publish.
+            timeout: Timeout in seconds.
+            poll_delay: Speed of polling for the subscriber message in
+                seconds.
+            check_id: If enabled, will only return messages with a
+                matching id field.
+        Returns:
+            sub_msg: Subscriber message.
+        """
+        self._waiting = True
+        time_waited = 0
+        while self._waiting:
+            rospy.sleep(poll_delay)
+            time_waited += 0.01
+            if time_waited > timeout:
+                raise TimeoutException(time_waited)
+        return self._subscriber_msg
+##################################################################################################

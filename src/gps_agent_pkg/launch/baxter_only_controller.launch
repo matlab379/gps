@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <launch>
-	<param name="GPSBaxterPlugin/type" value="GPSBaxterPlugin" />
+    <param name="GPSBaxterPlugin/type" value="GPSBaxterPlugin" />
     <!-- GDB functionality -->
     <arg name="debug" default="false" />
     <arg unless="$(arg debug)" name="launch_prefix" value="" />

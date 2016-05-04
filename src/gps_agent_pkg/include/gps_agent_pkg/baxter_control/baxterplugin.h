@@ -8,7 +8,7 @@ This is the Baxter-specific version of the robot plugin.
 #include <pluginlib/class_list_macros.h>
 
 //baxter
-#include <hardware_interface/joint_command_interface.h> 
+#include <hardware_interface/joint_command_interface.h>
 #include <controller_interface/controller.h>
 
 // Superclass.
@@ -24,11 +24,11 @@ This is the Baxter-specific version of the robot plugin.
 namespace gps_control
 {
 
-class GPSBaxterPlugin: public RobotPlugin, public controller_interface::Controller<hardware_interface::EffortJointInterface>
+class GPSBaxterPlugin: public RobotPlugin, public controller_interface::Controller<hardware_interface::VelocityJointInterface>
 {
 private:
     // This is a pointer to the robot state, which we get when initialized and have to keep after that.
-    hardware_interface::EffortJointInterface *robot_;
+    hardware_interface::VelocityJointInterface *robot_;
     //Passive arm chain
     Chain arm_chain_;
     // Passive arm joint states.
@@ -53,7 +53,7 @@ public:
     // Functions inherited from superclass.
     // This called by the superclass to allow us to initialize all the PR2-specific stuff.
     /* IMPORTANT: note that some sensors require a KDL chain to do FK, which we need the RobotState to get... */
-    virtual bool init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle& n);
+    virtual bool init(hardware_interface::VelocityJointInterface *robot, ros::NodeHandle& n);
     // This is called by the controller manager before starting the controller.
     virtual void starting(const ros::Time& time);
     // This is called by the controller manager before stopping the controller.

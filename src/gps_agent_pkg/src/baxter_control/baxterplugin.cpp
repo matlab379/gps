@@ -21,7 +21,7 @@ GPSBaxterPlugin::~GPSBaxterPlugin()
 }
 
 // Initialize the object and store the robot state.
-bool GPSBaxterPlugin::init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle& n)
+bool GPSBaxterPlugin::init(hardware_interface::VelocityJointInterface *robot, ros::NodeHandle& n)
 {
     ROS_INFO_STREAM_NAMED("hardware_interface","The GPSBaxterPlugin is initialing");
     // Variables.

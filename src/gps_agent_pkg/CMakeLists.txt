@@ -55,14 +55,14 @@ set(DDP_FILES src/robotplugin.cpp
               src/encodersensor.cpp
               src/encoderfilter.cpp
               src/util.cpp
-	      src/baxter_control/arm_hardware_interface.cpp
-	      src/baxter_control/arm_simulator_interface.cpp
-	      src/baxter_control/baxter_hardware_interface.cpp
-	      src/baxter_control/baxter_to_csv.cpp
-	      src/baxter_control/baxter_utilities.cpp
-	      src/baxter_control/baxterplugin.cpp
-	      src/baxter_control/chain.cpp) 
-# Include Caffe
+              src/baxter_control/arm_hardware_interface.cpp
+              src/baxter_control/arm_simulator_interface.cpp
+              src/baxter_control/baxter_hardware_interface.cpp
+              src/baxter_control/baxter_to_csv.cpp
+              src/baxter_control/baxter_utilities.cpp
+              src/baxter_control/baxterplugin.cpp
+              src/baxter_control/chain.cpp) 
+  # Include Caffe
 if (USE_CAFFE)
     # add definitions for the C++ code
     add_definitions(-DUSE_CAFFE)

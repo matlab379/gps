@@ -233,8 +233,10 @@ void RobotPlugin::update_controllers(ros::Time current_time, bool is_controller_
         trial_controller_->reset(current_time);
         trial_controller_.reset(NULL);
 
-        //Reset the active arm controller.
-        active_arm_controller_->reset(current_time);
+        //set the active arm controller to NO_CONTROL.
+        OptionsMap options;
+        options["mode"] = gps::NO_CONTROL;
+        active_arm_controller_->configure_controller(options);
 
         // Switch the sensors to run at full frequency.
         for (int sensor = 0; sensor < TotalSensorTypes; sensor++)
@@ -384,6 +386,7 @@ void RobotPlugin::trial_subscriber_callback(const gps_agent_pkg::TrialCommand::C
             controller_params["k_"+to_string(t)] = k;
         }
         trial_controller_->configure_controller(controller_params);
+        ROS_INFO_STREAM("the lingauss controller has been configured");
     }
 #ifdef USE_CAFFE
     else if (msg->controller.controller_to_execute == gps::CAFFE_CONTROLLER) {
@@ -421,6 +424,7 @@ void RobotPlugin::trial_subscriber_callback(const gps_agent_pkg::TrialCommand::C
         controller_params["bias"] = bias;
         controller_params["T"] = (int)msg->T;
         trial_controller_->configure_controller(controller_params);
+        ROS_INFO_STREAM("the caffe controller has been configured");
     }
 #endif
     else if (msg->controller.controller_to_execute == gps::TF_CONTROLLER) {

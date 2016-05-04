@@ -179,7 +179,7 @@ class PolicyOptCaffe(PolicyOpt):
                 self._hyperparams['ent_reg'] * np.ones((dU, dU))
         A = A / np.sum(tgt_wt)
 
-        # TODO - Use dense covariance?
+        # TODO - Use dense covariance?d
         self.var = 1 / np.diag(A)
 
         self.policy.net.share_with(self.solver.net)

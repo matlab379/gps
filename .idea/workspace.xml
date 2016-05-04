@@ -2,14 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c37dfab5-6a35-457e-9946-a758542a4fab" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experiments/baxter_experiment/target.npz" afterPath="$PROJECT_DIR$/experiments/baxter_experiment/target.npz" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/gps_agent_pkg/launch/baxter_gazebo.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/gps_agent_pkg/launch/baxter_gazebo_only_controller.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/gps_agent_pkg/launch/baxter_sdk_control.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/gps_agent_pkg/launch/baxter_world.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/gps_agent_pkg/launch/kinect_publish.launch" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/experiments/baxter_experiment/hyperparams.py" afterPath="$PROJECT_DIR$/experiments/baxter_experiment/hyperparams.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/python/gps/agent/config.py" afterPath="$PROJECT_DIR$/python/gps/agent/config.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/python/gps/agent/ros/agent_ros.py" afterPath="$PROJECT_DIR$/python/gps/agent/ros/agent_ros.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/python/gps/agent/ros/ros_utils.py" afterPath="$PROJECT_DIR$/python/gps/agent/ros/ros_utils.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/python/gps/gps_main.py" afterPath="$PROJECT_DIR$/python/gps/gps_main.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/python/gps/algorithm/policy_opt/policy_opt_caffe.py" afterPath="$PROJECT_DIR$/python/gps/algorithm/policy_opt/policy_opt_caffe.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gps_agent_pkg/launch/baxter_only_controller.launch" afterPath="$PROJECT_DIR$/src/gps_agent_pkg/launch/baxter_only_controller.launch" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gps_agent_pkg/src/robotplugin.cpp" afterPath="$PROJECT_DIR$/src/gps_agent_pkg/src/robotplugin.cpp" />
     </list>
     <ignored path="gps.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,18 +37,28 @@
       <file leaf-file-name="gps_main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/python/gps/gps_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="100" column="8" selection-start-line="100" selection-start-column="8" selection-end-line="100" selection-end-column="8" />
+            <state relative-caret-position="600">
+              <caret line="266" column="40" selection-start-line="266" selection-start-column="34" selection-end-line="266" selection-end-column="40" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="algorithm_badmm.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="algorithm_badmm.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/python/gps/algorithm/algorithm_badmm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="41" column="72" selection-start-line="41" selection-start-column="72" selection-end-line="41" selection-end-column="72" />
+            <state relative-caret-position="434">
+              <caret line="135" column="56" selection-start-line="135" selection-start-column="56" selection-end-line="135" selection-end-column="56" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="policy_opt_caffe.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/python/gps/algorithm/policy_opt/policy_opt_caffe.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="869">
+              <caret line="181" column="39" selection-start-line="181" selection-start-column="39" selection-end-line="181" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -54,8 +67,18 @@
       <file leaf-file-name="robotplugin.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/gps_agent_pkg/src/robotplugin.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="223" column="18" selection-start-line="223" selection-start-column="8" selection-end-line="223" selection-end-column="18" />
+            <state relative-caret-position="900">
+              <caret line="226" column="0" selection-start-line="223" selection-start-column="8" selection-end-line="223" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="hyperparams.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/experiments/baxter_experiment/hyperparams.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="118" column="13" selection-start-line="118" selection-start-column="13" selection-end-line="118" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -64,7 +87,7 @@
       <file leaf-file-name="agent_ros.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/python/gps/agent/ros/agent_ros.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="130">
+            <state relative-caret-position="1935">
               <caret line="142" column="8" selection-start-line="142" selection-start-column="8" selection-end-line="142" selection-end-column="8" />
               <folding>
                 <element signature="e#64#75#0" expanded="true" />
@@ -76,8 +99,8 @@
       <file leaf-file-name="ros_utils.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/python/gps/agent/ros/ros_utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
-              <caret line="112" column="56" selection-start-line="112" selection-start-column="56" selection-end-line="112" selection-end-column="56" />
+            <state relative-caret-position="1185">
+              <caret line="87" column="0" selection-start-line="87" selection-start-column="0" selection-end-line="87" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -100,10 +123,12 @@
         <option value="$PROJECT_DIR$/src/gps_agent_pkg/src/robotplugin.cpp" />
         <option value="$PROJECT_DIR$/src/gps_agent_pkg/launch/baxter_left_controller.yaml" />
         <option value="$PROJECT_DIR$/python/gps/agent/config.py" />
-        <option value="$PROJECT_DIR$/experiments/baxter_experiment/hyperparams.py" />
         <option value="$PROJECT_DIR$/python/gps/agent/ros/agent_ros.py" />
-        <option value="$PROJECT_DIR$/python/gps/agent/ros/ros_utils.py" />
         <option value="$PROJECT_DIR$/python/gps/gps_main.py" />
+        <option value="$PROJECT_DIR$/python/gps/algorithm/algorithm_badmm.py" />
+        <option value="$PROJECT_DIR$/python/gps/agent/ros/ros_utils.py" />
+        <option value="$PROJECT_DIR$/python/gps/algorithm/policy_opt/policy_opt_caffe.py" />
+        <option value="$PROJECT_DIR$/experiments/baxter_experiment/hyperparams.py" />
       </list>
     </option>
   </component>
@@ -113,10 +138,10 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1920" />
-    <option name="y" value="-4" />
-    <option name="width" value="1920" />
-    <option name="height" value="1084" />
+    <option name="x" value="118" />
+    <option name="y" value="175" />
+    <option name="width" value="1845" />
+    <option name="height" value="998" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -143,7 +168,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -231,8 +255,41 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="experiments" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="experiments" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="baxter_experiment" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -466,10 +523,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1920" y="-4" width="1920" height="1084" extended-state="6" />
+    <frame x="118" y="175" width="1845" height="998" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25667024" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21901056" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32916668" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -513,13 +570,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/gps_agent_pkg/include/gps_agent_pkg/pr2plugin.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/experiments/pr2_badmm_example/hyperparams.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="389">
@@ -807,26 +857,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/experiments/baxter_experiment/data_files/pol_sample_itr_00.pkl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/experiments/baxter_experiment/data_files/pol_sample_itr_00.pkl" />
     <entry file="file://$PROJECT_DIR$/src/gps_agent_pkg/msg/SampleResult.msg">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/experiments/baxter_experiment/hyperparams.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="268">
-          <caret line="108" column="29" selection-start-line="108" selection-start-column="29" selection-end-line="108" selection-end-column="29" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -838,25 +873,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/python/gps/gps_main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="100" column="8" selection-start-line="100" selection-start-column="8" selection-end-line="100" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/gps_agent_pkg/src/robotplugin.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="223" column="18" selection-start-line="223" selection-start-column="8" selection-end-line="223" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/python/gps/agent/ros/agent_ros.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="130">
+        <state relative-caret-position="1935">
           <caret line="142" column="8" selection-start-line="142" selection-start-column="8" selection-end-line="142" selection-end-column="8" />
           <folding>
             <element signature="e#64#75#0" expanded="true" />
@@ -866,16 +885,48 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/python/gps/agent/ros/ros_utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="112" column="56" selection-start-line="112" selection-start-column="56" selection-end-line="112" selection-end-column="56" />
+        <state relative-caret-position="1185">
+          <caret line="87" column="0" selection-start-line="87" selection-start-column="0" selection-end-line="87" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/gps_agent_pkg/src/robotplugin.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="900">
+          <caret line="226" column="0" selection-start-line="223" selection-start-column="8" selection-end-line="223" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/python/gps/algorithm/algorithm_badmm.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="41" column="72" selection-start-line="41" selection-start-column="72" selection-end-line="41" selection-end-column="72" />
+        <state relative-caret-position="434">
+          <caret line="135" column="56" selection-start-line="135" selection-start-column="56" selection-end-line="135" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/gps/algorithm/policy_opt/policy_opt_caffe.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="869">
+          <caret line="181" column="39" selection-start-line="181" selection-start-column="39" selection-end-line="181" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/python/gps/gps_main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="600">
+          <caret line="266" column="40" selection-start-line="266" selection-start-column="34" selection-end-line="266" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/experiments/baxter_experiment/hyperparams.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="118" column="13" selection-start-line="118" selection-start-column="13" selection-end-line="118" selection-end-column="13" />
           <folding />
         </state>
       </provider>

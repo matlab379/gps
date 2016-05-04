@@ -18,15 +18,14 @@
     <!--param name="robot_description" command="$(find xacro)/xacro.py - -inorder $(find baxter_description)/urdf/baxter.urdf.xacro" -->
 
     <!-- Load the URDF into the ROS Parameter Server -->
-    <param name="robot_description"
-	   command="cat '$(find baxter_description)/urdf/baxter.urdf'" />
+    <param name="robot_description" command="cat '$(find baxter_description)/urdf/baxter.urdf'" />
     <!-- Load hardware interface -->
-    <node name="baxter_hardware_interface" pkg="gps_agent_pkg" type="baxter_hardware_interface"
-	  respawn="false" output="screen" launch-prefix="$(arg launch_prefix)"/>
+    <node name="baxter_hardware_interface" pkg="gps_agent_pkg" type="baxter_hardware_interface" respawn="false" output="screen" launch-prefix="$(arg launch_prefix)"/>
 
     <!-- Spawn Controller -->
-    <node name="controller_spawner"
-         pkg="controller_manager" type="spawner" output="screen"
-	 args="GPSBaxterPlugin" />
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" args="GPSBaxterPlugin" />
+    <!-- publish a empty msg to the gravity/spring to set the torque is the effort of the joint stat  -->
+    <node name="disable_gravity_left" pkg="rostopic" type="rostopic" args="pub -r 10 /robot/limb/left/suppress_gravity_compensation std_msgs/Empty" />
+    <node name="disable_gravity_right" pkg="rostopic" type="rostopic" args="pub -r 10 /robot/limb/right/suppress_gravity_compensation std_msgs/Empty" />
 
 </launch>

@@ -103,3 +103,4 @@ src/gps_agent_pkg/devel
 #doxygen
 html/
 
+experiments/baxter_experiment/backup/

@@ -119,7 +119,7 @@ agent = {
 algorithm = {
     'type': AlgorithmBADMM,
     'conditions': common['conditions'],
-    'iterations': 1000,
+    'iterations': 50,
     'lg_step_schedule': np.array([1e-4, 1e-3, 1e-2, 1e-1]),
     'policy_dual_rate': 0.1,
     'ent_reg_schedule': np.array([1e-3, 1e-3, 1e-2, 1e-1]),
@@ -142,7 +142,7 @@ algorithm['init_traj_distr'] = {
     'type': init_lqr,
     'init_gains':  1.0 / PR2_GAINS,
     'init_acc': np.zeros(SENSOR_DIMS[ACTION]),
-    'init_var': 1.0,
+    'init_var': 0.2,
     'stiffness': 0.5,
     'stiffness_vel': 0.25,
     'final_weight': 50,

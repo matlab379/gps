@@ -233,7 +233,7 @@ void RobotPlugin::update_controllers(ros::Time current_time, bool is_controller_
         trial_controller_->reset(current_time);
         trial_controller_.reset(NULL);
 
-        //set the active arm controller to NO_CONTROL.
+        // Set the active arm controller to NO_CONTROL.
         OptionsMap options;
         options["mode"] = gps::NO_CONTROL;
         active_arm_controller_->configure_controller(options);

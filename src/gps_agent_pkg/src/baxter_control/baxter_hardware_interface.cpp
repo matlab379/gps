@@ -47,7 +47,7 @@ namespace gps_control
 
 BaxterHardwareInterface::BaxterHardwareInterface(bool in_simulation)
   : in_simulation_(in_simulation),
-    joint_mode_(2),
+    joint_mode_(1),
     loop_hz_(100)
 {
   if( in_simulation_ )

@@ -25,7 +25,7 @@
     <!-- Spawn Controller -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" args="GPSBaxterPlugin" />
     <!-- publish a empty msg to the gravity/spring to set the torque is the effort of the joint stat  -->
-    <node name="disable_gravity_left" pkg="rostopic" type="rostopic" args="pub -r 10 /robot/limb/left/suppress_gravity_compensation std_msgs/Empty" />
-    <node name="disable_gravity_right" pkg="rostopic" type="rostopic" args="pub -r 10 /robot/limb/right/suppress_gravity_compensation std_msgs/Empty" />
+    <!-- <node name="disable_gravity_left" pkg="rostopic" type="rostopic" args="pub &#45;r 10 /robot/limb/left/suppress_gravity_compensation std_msgs/Empty" /> -->
+    <!-- <node name="disable_gravity_right" pkg="rostopic" type="rostopic" args="pub &#45;r 10 /robot/limb/right/suppress_gravity_compensation std_msgs/Empty" /> -->
 
 </launch>

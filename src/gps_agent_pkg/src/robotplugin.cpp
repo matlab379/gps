@@ -12,10 +12,10 @@
 #include "gps/proto/gps.pb.h"
 #include <vector>
 
-#ifdef USE_CAFFE
+// #ifdef USE_CAFFE
 #include "gps_agent_pkg/caffenncontroller.h"
 #include "gps_agent_pkg/CaffeParams.h"
-#endif
+// #endif
 
 using namespace gps_control;
 
@@ -95,18 +95,18 @@ void RobotPlugin::initialize_sensors(ros::NodeHandle& n)
     current_time_step_sample_.reset(new Sample(MAX_TRIAL_LENGTH));
     initialize_sample(current_time_step_sample_, gps::TRIAL_ARM);
 
-    aux_sensors_.clear();
-    // Create all auxiliary sensors.  Currently only an encodersensor
-    for (int i = 0; i < 1; i++)
-    {
-        ROS_INFO_STREAM("creating auxiliary sensor: " + to_string(i));
-        boost::shared_ptr<Sensor> sensor(Sensor::create_sensor((SensorType)i,n,this, gps::AUXILIARY_ARM));
-        aux_sensors_.push_back(sensor);
-    }
-
-    // Create current state sample and populate it using the sensors.
-    aux_current_time_step_sample_.reset(new Sample(1));
-    initialize_sample(aux_current_time_step_sample_, gps::AUXILIARY_ARM);
+    // aux_sensors_.clear();
+    // // Create all auxiliary sensors.  Currently only an encodersensor
+    // for (int i = 0; i < 1; i++)
+    // {
+    //     ROS_INFO_STREAM("creating auxiliary sensor: " + to_string(i));
+    //     boost::shared_ptr<Sensor> sensor(Sensor::create_sensor((SensorType)i,n,this, gps::AUXILIARY_ARM));
+    //     aux_sensors_.push_back(sensor);
+    // }
+    //
+    // // Create current state sample and populate it using the sensors.
+    // aux_current_time_step_sample_.reset(new Sample(1));
+    // initialize_sample(aux_current_time_step_sample_, gps::AUXILIARY_ARM);
 
     sensors_initialized_ = true;
 }
@@ -128,11 +128,11 @@ void RobotPlugin::configure_sensors(OptionsMap &opts)
         gps::ACTION,active_arm_torques_.size(),SampleDataFormatEigenVector,sample_metadata);
 
     // configure auxiliary sensors
-    for (int i = 0; i < aux_sensors_.size(); i++)
-    {
-        aux_sensors_[i]->configure_sensor(opts);
-        aux_sensors_[i]->set_sample_data_format(aux_current_time_step_sample_);
-    }
+    // for (int i = 0; i < aux_sensors_.size(); i++)
+    // {
+    //     aux_sensors_[i]->configure_sensor(opts);
+    //     aux_sensors_[i]->set_sample_data_format(aux_current_time_step_sample_);
+    // }
     sensors_initialized_ = true;
 }
 
@@ -141,7 +141,7 @@ void RobotPlugin::initialize_position_controllers(ros::NodeHandle& n)
 {
     // Create passive arm position controller.
     // TODO: fix this to be something that comes out of the robot itself
-    passive_arm_controller_.reset(new PositionController(n, gps::AUXILIARY_ARM, 7));
+    // passive_arm_controller_.reset(new PositionController(n, gps::AUXILIARY_ARM, 7));
 
     // Create active arm position controller.
     active_arm_controller_.reset(new PositionController(n, gps::TRIAL_ARM, 7));
@@ -161,13 +161,13 @@ void RobotPlugin::initialize_sample(boost::scoped_ptr<Sample>& sample, gps::Actu
         OptionsMap sample_metadata;
         sample->set_meta_data(gps::ACTION,active_arm_torques_.size(),SampleDataFormatEigenVector,sample_metadata);
     }
-    else if (actuator_type == gps::AUXILIARY_ARM)
-    {
-        for (int i = 0; i < aux_sensors_.size(); i++)
-        {
-            aux_sensors_[i]->set_sample_data_format(sample);
-        }
-    }
+    // else if (actuator_type == gps::AUXILIARY_ARM)
+    // {
+    //     for (int i = 0; i < aux_sensors_.size(); i++)
+    //     {
+    //         aux_sensors_[i]->set_sample_data_format(sample);
+    //     }
+    // }
     ROS_INFO("set sample data format");
 }
 
@@ -189,12 +189,12 @@ void RobotPlugin::update_sensors(ros::Time current_time, bool is_controller_step
         }
     }
 
-    // Update all of the auxiliary sensors and fill in the sample.
-    for (int sensor = 0; sensor < aux_sensors_.size(); sensor++)
-    {
-        aux_sensors_[sensor]->update(this, current_time, is_controller_step);
-        aux_sensors_[sensor]->set_sample_data(aux_current_time_step_sample_, 0);
-    }
+    // // Update all of the auxiliary sensors and fill in the sample.
+    // for (int sensor = 0; sensor < aux_sensors_.size(); sensor++)
+    // {
+    //     aux_sensors_[sensor]->update(this, current_time, is_controller_step);
+    //     aux_sensors_[sensor]->set_sample_data(aux_current_time_step_sample_, 0);
+    // }
 
     // If a data request is waiting, publish the sample.
     if (trial_data_request_waiting_) {
@@ -202,10 +202,10 @@ void RobotPlugin::update_sensors(ros::Time current_time, bool is_controller_step
         trial_data_request_waiting_ = false;
     }
 
-    if (aux_data_request_waiting_) {
-        publish_sample_report(aux_current_time_step_sample_);
-        aux_data_request_waiting_ = false;
-    }
+    // if (aux_data_request_waiting_) {
+    //     publish_sample_report(aux_current_time_step_sample_);
+    //     aux_data_request_waiting_ = false;
+    // }
 }
 
 // Update the controllers at each time step.
@@ -213,7 +213,7 @@ void RobotPlugin::update_controllers(ros::Time current_time, bool is_controller_
 {
     // Update passive arm controller.
     // TODO - don't pass in wrong sample if used
-    passive_arm_controller_->update(this, current_time, current_time_step_sample_, passive_arm_torques_);
+    // passive_arm_controller_->update(this, current_time, current_time_step_sample_, passive_arm_torques_);
 
     bool trial_init = trial_controller_ != NULL && trial_controller_->is_configured() && controller_initialized_;
     if(!is_controller_step && trial_init){
@@ -250,12 +250,13 @@ void RobotPlugin::update_controllers(ros::Time current_time, bool is_controller_
             active_arm_controller_->report_waiting = false;
         }
     }
-    if (passive_arm_controller_->report_waiting){
-        if (passive_arm_controller_->is_finished()){
-            publish_sample_report(current_time_step_sample_);
-            passive_arm_controller_->report_waiting = false;
-        }
-    }
+    // if (passive_arm_controller_->report_waiting){
+    //
+    //     if (passive_arm_controller_->is_finished()){
+    //         publish_sample_report(current_time_step_sample_);
+    //         passive_arm_controller_->report_waiting = false;
+    //     }
+    // }
 
 }
 
@@ -316,9 +317,11 @@ void RobotPlugin::position_subscriber_callback(const gps_agent_pkg::PositionComm
 
     if(arm == gps::TRIAL_ARM){
         active_arm_controller_->configure_controller(params);
-    }else if (arm == gps::AUXILIARY_ARM){
-        passive_arm_controller_->configure_controller(params);
-    }else{
+    }
+    // else if (arm == gps::AUXILIARY_ARM){
+    //     passive_arm_controller_->configure_controller(params);
+    // }
+    else{
         ROS_ERROR("Unknown position controller arm type");
     }
 }
@@ -388,7 +391,7 @@ void RobotPlugin::trial_subscriber_callback(const gps_agent_pkg::TrialCommand::C
         trial_controller_->configure_controller(controller_params);
         ROS_INFO_STREAM("the lingauss controller has been configured");
     }
-#ifdef USE_CAFFE
+// #ifdef USE_CAFFE
     else if (msg->controller.controller_to_execute == gps::CAFFE_CONTROLLER) {
         gps_agent_pkg::CaffeParams params = msg->controller.caffe;
         trial_controller_.reset(new CaffeNNController());
@@ -426,7 +429,7 @@ void RobotPlugin::trial_subscriber_callback(const gps_agent_pkg::TrialCommand::C
         trial_controller_->configure_controller(controller_params);
         ROS_INFO_STREAM("the caffe controller has been configured");
     }
-#endif
+// #endif
     else if (msg->controller.controller_to_execute == gps::TF_CONTROLLER) {
         trial_controller_.reset(new TfController());
         controller_params["T"] = (int)msg->T;
@@ -488,9 +491,11 @@ void RobotPlugin::relax_subscriber_callback(const gps_agent_pkg::RelaxCommand::C
 
     if(arm == gps::TRIAL_ARM){
         active_arm_controller_->configure_controller(params);
-    }else if (arm == gps::AUXILIARY_ARM){
-        passive_arm_controller_->configure_controller(params);
-    }else{
+    }
+    // else if (arm == gps::AUXILIARY_ARM){
+    //     passive_arm_controller_->configure_controller(params);
+    // }
+    else{
         ROS_ERROR("Unknown position controller arm type");
     }
 }
@@ -506,10 +511,10 @@ void RobotPlugin::data_request_subscriber_callback(const gps_agent_pkg::DataRequ
         {
             trial_data_request_waiting_ = true;
         }
-        else if (arm_type == gps::AUXILIARY_ARM)
-        {
-            aux_data_request_waiting_ = true;
-        }
+        // else if (arm_type == gps::AUXILIARY_ARM)
+        // {
+        //     aux_data_request_waiting_ = true;
+        // }
     }
     else
     {
@@ -526,22 +531,23 @@ Sensor *RobotPlugin::get_sensor(SensorType sensor, gps::ActuatorType actuator_ty
         assert(sensor < TotalSensorTypes);
         return sensors_[sensor].get();
     }
-    else if (actuator_type == gps::AUXILIARY_ARM)
-    {
-        assert((int)sensor < aux_sensors_.size());
-        return aux_sensors_[sensor].get();
-    }
+    // else if (actuator_type == gps::AUXILIARY_ARM)
+    // {
+    //     assert((int)sensor < aux_sensors_.size());
+    //     return aux_sensors_[sensor].get();
+    // }
 }
 
 // Get forward kinematics solver.
 void RobotPlugin::get_fk_solver(boost::shared_ptr<KDL::ChainFkSolverPos> &fk_solver, boost::shared_ptr<KDL::ChainJntToJacSolver> &jac_solver, gps::ActuatorType arm)
 {
-    if (arm == gps::AUXILIARY_ARM)
-    {
-        fk_solver = passive_arm_fk_solver_;
-        jac_solver = passive_arm_jac_solver_;
-    }
-    else if (arm == gps::TRIAL_ARM)
+    // if (arm == gps::AUXILIARY_ARM)
+    // {
+    //     fk_solver = passive_arm_fk_solver_;
+    //     jac_solver = passive_arm_jac_solver_;
+    // }
+    // else
+      if (arm == gps::TRIAL_ARM)
     {
         fk_solver = active_arm_fk_solver_;
         jac_solver = active_arm_jac_solver_;

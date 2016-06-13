@@ -1,0 +1,5 @@
+#!/bin/sh
+# tmux split-window -v "source /home/yhchen/ros_ws/baxter.sh && gdb --args $*"
+# tmux split-window -v "gdb --args $*"
+tmux split-window -v "source /home/yhchen/ros_ws/baxter.sh"
+

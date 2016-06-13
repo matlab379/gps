@@ -2,9 +2,12 @@
 <launch>
     <param name="GPSBaxterPlugin/type" value="GPSBaxterPlugin" />
     <!-- GDB functionality -->
-    <arg name="debug" default="false" />
+    <arg name="debug" default="true" />
     <arg unless="$(arg debug)" name="launch_prefix" value="" />
-    <arg     if="$(arg debug)" name="launch_prefix" value="gdb --ex run --args" />
+    <arg if="$(arg debug)" name="launch_prefix" value="gdb --args" />
+    <!-- <arg if="$(arg debug)" name="launch_prefix" value="gdb &#45;&#45;ex run &#45;&#45;args" /> -->
+    <!-- <arg if="$(arg debug)" name="launch_prefix" value="xterm &#45;e gdb &#45;&#45;args" /> -->
+    <!-- <arg if="$(arg debug)" name="launch_prefix" value="/home/yhchen/Documents/BHYW/robot/gps/src/gps_agent_pkg/run_tmux"/> -->
     <rosparam command="load" file="$(find gps_agent_pkg)/launch/baxter_left_controller.yaml" />
 
     <!-- controller params -->
@@ -23,7 +26,7 @@
     <node name="baxter_hardware_interface" pkg="gps_agent_pkg" type="baxter_hardware_interface" respawn="false" output="screen" launch-prefix="$(arg launch_prefix)"/>
 
     <!-- Spawn Controller -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" args="GPSBaxterPlugin" />
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" output="log" args="GPSBaxterPlugin" />
     <!-- publish a empty msg to the gravity/spring to set the torque is the effort of the joint stat  -->
     <!-- <node name="disable_gravity_left" pkg="rostopic" type="rostopic" args="pub &#45;r 10 /robot/limb/left/suppress_gravity_compensation std_msgs/Empty" /> -->
     <!-- <node name="disable_gravity_right" pkg="rostopic" type="rostopic" args="pub &#45;r 10 /robot/limb/right/suppress_gravity_compensation std_msgs/Empty" /> -->

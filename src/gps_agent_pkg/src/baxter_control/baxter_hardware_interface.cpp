@@ -86,7 +86,7 @@ BaxterHardwareInterface::BaxterHardwareInterface(bool in_simulation)
     } while (state_msg_->name.size() != NUM_BAXTER_JOINTS);
   }
 
- 
+
   // Initialize right arm
   right_arm_hw_->init(js_interface_, ej_interface_, vj_interface_, pj_interface_, &joint_mode_, state_msg_);
   left_arm_hw_->init(js_interface_, ej_interface_, vj_interface_, pj_interface_, &joint_mode_, state_msg_);

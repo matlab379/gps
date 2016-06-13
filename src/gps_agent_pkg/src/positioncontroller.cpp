@@ -5,12 +5,11 @@
 using namespace gps_control;
 
 // Constructor.
-
-// Constructor.
 PositionController::PositionController(ros::NodeHandle& n, gps::ActuatorType arm, int size)
     : Controller(n, arm, size)
 {
     // Initialize PD gains.
+    ROS_INFO_STREAM("Initializing position controller");
     pd_gains_p_.resize(size);
     pd_gains_d_.resize(size);
     pd_gains_i_.resize(size);
@@ -46,8 +45,20 @@ PositionController::PositionController(ros::NodeHandle& n, gps::ActuatorType arm
     // Set arm.
     arm_ = arm;
 
-    //
     report_waiting = false;
+    //initialize the publisher to publish the errors of the joints
+    ROS_INFO_STREAM("Initializing position controller ROS subs/pubs");
+    error_s0_pub.reset(new realtime_tools::RealtimePublisher<std_msgs::Float32>(n, "/gps/error_s0", 1));
+    error_s1_pub.reset(new realtime_tools::RealtimePublisher<std_msgs::Float32>(n, "/gps/error_s1", 1));
+    error_e0_pub.reset(new realtime_tools::RealtimePublisher<std_msgs::Float32>(n, "/gps/error_e0", 1));
+    error_e1_pub.reset(new realtime_tools::RealtimePublisher<std_msgs::Float32>(n, "/gps/error_e1", 1));
+    error_w0_pub.reset(new realtime_tools::RealtimePublisher<std_msgs::Float32>(n, "/gps/error_w0", 1));
+    error_w1_pub.reset(new realtime_tools::RealtimePublisher<std_msgs::Float32>(n, "/gps/error_w1", 1));
+    error_w2_pub.reset(new realtime_tools::RealtimePublisher<std_msgs::Float32>(n, "/gps/error_w2", 1));
+    config_update = false;
+    srv_.reset(new dynamic_reconfigure::Server<gps_agent_pkg::JointVelocityPIDConfig>(n));
+    callbackType_ = boost::bind(&PositionController::callback,this, _1, _2);
+    srv_->setCallback(callbackType_);
 }
 
 // Destructor.
@@ -93,12 +104,36 @@ void PositionController::update(RobotPlugin *plugin, ros::Time current_time, boo
         target_angles_ = current_angles_ + temp_jacobian_.transpose() * (target_pose_ - current_pose_);
     }
 
+
     // If we're doing any kind of control at all, compute torques now.
     if (mode_ != gps::NO_CONTROL)
     {
         // Compute error.
         temp_angles_ = current_angles_ - target_angles_;
+        while(!error_s0_pub->trylock() && !error_s1_pub->trylock() && !error_e0_pub->trylock() && !error_e1_pub->trylock() && !error_w0_pub->trylock() && !error_w1_pub->trylock() && !error_w2_pub->trylock());
+        error_s0_pub->msg_.data = temp_angles_(0);
+        error_s1_pub->msg_.data = temp_angles_(1);
+        error_e0_pub->msg_.data = temp_angles_(2);
+        error_e1_pub->msg_.data = temp_angles_(3);
+        error_w0_pub->msg_.data = temp_angles_(4);
+        error_w1_pub->msg_.data = temp_angles_(5);
+        error_w2_pub->msg_.data = temp_angles_(6);
+        error_s0_pub->unlockAndPublish();
+        error_s1_pub->unlockAndPublish();
+        error_e0_pub->unlockAndPublish();
+        error_e1_pub->unlockAndPublish();
+        error_w0_pub->unlockAndPublish();
+        error_w1_pub->unlockAndPublish();
+        error_w2_pub->unlockAndPublish();
 
+
+        if(config_update){
+          for(int i=0;i<7;i++){
+            ROS_INFO_STREAM("the config_update is :" << config_update);
+            ROS_INFO_STREAM("positioncontroller update: pd:pidc:"<< i << "/" << pd_gains_p_.size() << "---" << pd_gains_p_(i) << "---"<< pd_gains_i_(i) << "---"<< pd_gains_d_(i) << "---"<< i_clamp_(i) << "---");
+          }
+          config_update = false;
+        }
         // Add to integral term.
         pd_integral_ += temp_angles_ * update_time;
 
@@ -116,6 +151,8 @@ void PositionController::update(RobotPlugin *plugin, ros::Time current_time, boo
         torques = -((pd_gains_p_.array() * temp_angles_.array()) +
                     (pd_gains_d_.array() * current_angle_velocities_.array()) +
                     (pd_gains_i_.array() * pd_integral_.array())).matrix();
+
+        ros::spinOnce();
     }
     else
     {
@@ -135,13 +172,13 @@ void PositionController::configure_controller(OptionsMap &options)
     mode_ = (gps::PositionControlMode) boost::get<int>(options["mode"]);
     if (mode_ != gps::NO_CONTROL){
         Eigen::VectorXd data = boost::get<Eigen::VectorXd>(options["data"]);
-        Eigen::MatrixXd pd_gains = boost::get<Eigen::MatrixXd>(options["pd_gains"]);
-        for(int i=0; i<pd_gains.rows(); i++){
-            pd_gains_p_(i) = pd_gains(i, 0);
-            pd_gains_i_(i) = pd_gains(i, 1);
-            pd_gains_d_(i) = pd_gains(i, 2);
-            i_clamp_(i) = pd_gains(i, 3);
-        }
+        // Eigen::MatrixXd pd_gains = boost::get<Eigen::MatrixXd>(options["pd_gains"]);
+        // for(int i=0; i<pd_gains.rows(); i++){
+        //     pd_gains_p_(i) = pd_gains(i, 0);
+        //     pd_gains_i_(i) = pd_gains(i, 1);
+        //     pd_gains_d_(i) = pd_gains(i, 2);
+        //     i_clamp_(i) = pd_gains(i, 3);
+        // }
         if(mode_ == gps::JOINT_SPACE){
             target_angles_ = data;
         }else{
@@ -174,5 +211,23 @@ void PositionController::reset(ros::Time time)
 
     // Clear update time.
     last_update_time_ = ros::Time(0.0);
+}
+
+void PositionController::callback(gps_agent_pkg::JointVelocityPIDConfig &config, uint32_t level){
+    ROS_INFO_STREAM("update_config: " << config_update);
+    update_pid(config);
+}
+
+void PositionController::update_pid(gps_agent_pkg::JointVelocityPIDConfig &config){
+    pd_gains_i_ << config.s0_i,config.s1_i, config.e0_i,config.e1_i, config.w0_i, config.w1_i, config.w2_i;
+    pd_gains_p_ << config.s0_p,config.s1_p, config.e0_p,config.e1_p, config.w0_p, config.w1_p, config.w2_p;
+    pd_gains_d_ << config.s0_d,config.s1_d, config.e0_d,config.e1_d, config.w0_d, config.w1_d, config.w2_d;
+    i_clamp_ << config.s0_c,config.s1_c, config.e0_c,config.e1_c, config.w0_c, config.w1_c, config.w2_c;
+    for(int i=0;i<7;i++){
+      ROS_INFO_STREAM("pd:pidc:"<< i << "/" << pd_gains_p_.size() << "---" << pd_gains_p_(i) << "---"<< pd_gains_i_(i) << "---"<< pd_gains_d_(i) << "---"<< i_clamp_(i) << "---");
+    }
+    ROS_INFO_STREAM("update the config");
+    config_update = true;
+    ROS_INFO_STREAM("update the config: " << config_update);
 }
 

@@ -68,8 +68,8 @@ class AgentROS(Agent):
             self._hyperparams['relax_command_topic'], RelaxCommand
         )
         self._data_service = ServiceEmulator(
-            self._hyperparams['data_request_topic'], DataRequest,
-            self._hyperparams['sample_result_topic'], SampleResult
+            self._hyperparams['sample_result_topic'], SampleResult,
+            self._hyperparams['data_request_topic'], DataRequest
         )
 ########### ############# a object to subscribe the tgt from agile pkg#####Brook###
         self._tgt_subscribe = ServiceEmulator(
@@ -137,8 +137,8 @@ class AgentROS(Agent):
         condition_data = self._hyperparams['reset_conditions'][condition]
         self.reset_arm(TRIAL_ARM, condition_data[TRIAL_ARM]['mode'],
                        condition_data[TRIAL_ARM]['data'])
-        self.reset_arm(AUXILIARY_ARM, condition_data[AUXILIARY_ARM]['mode'],
-                       condition_data[AUXILIARY_ARM]['data'])
+        #self.reset_arm(AUXILIARY_ARM, condition_data[AUXILIARY_ARM]['mode'],
+                       #condition_data[AUXILIARY_ARM]['data'])
 
     def sample(self, policy, condition, verbose=True, save=True):
         """

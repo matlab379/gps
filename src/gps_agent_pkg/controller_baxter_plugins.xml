@@ -1,4 +1,4 @@
-<library path="lib/libgps_agent_lib">
+<library path="devel/lib/libgps_agent_lib">
   <class name="GPSBaxterPlugin"
 	  type="gps_control::GPSBaxterPlugin" 
 	  base_class_type="controller_interface::ControllerBase" />

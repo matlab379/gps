@@ -38,15 +38,15 @@ bool GPSBaxterPlugin::init(hardware_interface::VelocityJointInterface *robot, ro
         return false;
     }
 
-    // Get active and passive arm end-effector names.
+    // // Get active passive arm end-effector names.
     if(!n.getParam("active_tip_name", active_tip_name)) {
         ROS_ERROR("Property active_tip_name not found in namespace: '%s'", n.getNamespace().c_str());
         return false;
     }
-    if(!n.getParam("passive_tip_name", passive_tip_name)) {
-        ROS_ERROR("Property passive_tip_name not found in namespace: '%s'", n.getNamespace().c_str());
-        return false;
-    }
+    // if(!n.getParam("passive_tip_name", passive_tip_name)) {
+    //     ROS_ERROR("Property passive_tip_name not found in namespace: '%s'", n.getNamespace().c_str());
+    //     return false;
+    // }
 
     // Create arm chain.
     if(!arm_chain_.init(n)) {
@@ -57,16 +57,16 @@ bool GPSBaxterPlugin::init(hardware_interface::VelocityJointInterface *robot, ro
     // Create KDL chains, solvers, etc.
     // KDL chains.
     // Create passive arm chain.
-    arm_chain_.toKDL(root_name, passive_tip_name, passive_arm_fk_chain_);
+    // arm_chain_.toKDL(root_name, passive_tip_name, passive_arm_fk_chain_);
     // Create active arm chain.
     arm_chain_.toKDL(root_name, active_tip_name, active_arm_fk_chain_);
 
     // Pose solvers.
-    passive_arm_fk_solver_.reset(new KDL::ChainFkSolverPos_recursive(passive_arm_fk_chain_));
+    // passive_arm_fk_solver_.reset(new KDL::ChainFkSolverPos_recursive(passive_arm_fk_chain_));
     active_arm_fk_solver_.reset(new KDL::ChainFkSolverPos_recursive(active_arm_fk_chain_));
 
     // Jacobian sovlers.
-    passive_arm_jac_solver_.reset(new KDL::ChainJntToJacSolver(passive_arm_fk_chain_));
+    // passive_arm_jac_solver_.reset(new KDL::ChainJntToJacSolver(passive_arm_fk_chain_));
     active_arm_jac_solver_.reset(new KDL::ChainJntToJacSolver(active_arm_fk_chain_));
 
     // Pull out joint states.
@@ -99,32 +99,32 @@ bool GPSBaxterPlugin::init(hardware_interface::VelocityJointInterface *robot, ro
         return false;
     }
 
-    // Put together joint states for the passive arm.
-    joint_index = 1;
-    while (true)
-    {
-        // Check if the parameter for this passive joint exists.
-        std::string joint_name;
-        std::string param_name = std::string("/passive_arm_joint_name_" + to_string(joint_index));
-        if(!n.getParam(param_name, joint_name))
-            break;
-
-        // Push back the joint state and name.
-        passive_arm_joint_state_.push_back(robot_->getHandle(joint_name));
-        passive_arm_joint_names_.push_back(joint_name);
-
-        // Increment joint index.
-        joint_index++;
-    }
-    // Validate that the number of joints in the chain equals the length of the active arm joint state.
-    if (passive_arm_fk_chain_.getNrOfJoints() != passive_arm_joint_state_.size())
-    {
-        ROS_INFO_STREAM("num_fk_chain: " + to_string(passive_arm_fk_chain_.getNrOfJoints()));
-        ROS_INFO_STREAM("num_joint_state: " + to_string(passive_arm_joint_state_.size()));
-        ROS_ERROR("Number of joints in the passive arm FK chain does not match the number of joints in the passive arm joint state!");
-        return false;
-    }
-
+    // // Put together joint states for the passive arm.
+    // joint_index = 1;
+    // while (true)
+    // {
+    //     // Check if the parameter for this passive joint exists.
+    //     std::string joint_name;
+    //     std::string param_name = std::string("/passive_arm_joint_name_" + to_string(joint_index));
+    //     if(!n.getParam(param_name, joint_name))
+    //         break;
+    //
+    //     // Push back the joint state and name.
+    //     passive_arm_joint_state_.push_back(robot_->getHandle(joint_name));
+    //     passive_arm_joint_names_.push_back(joint_name);
+    //
+    //     // Increment joint index.
+    //     joint_index++;
+    // }
+    // // Validate that the number of joints in the chain equals the length of the active arm joint state.
+    // if (passive_arm_fk_chain_.getNrOfJoints() != passive_arm_joint_state_.size())
+    // {
+    //     ROS_INFO_STREAM("num_fk_chain: " + to_string(passive_arm_fk_chain_.getNrOfJoints()));
+    //     ROS_INFO_STREAM("num_joint_state: " + to_string(passive_arm_joint_state_.size()));
+    //     ROS_ERROR("Number of joints in the passive arm FK chain does not match the number of joints in the passive arm joint state!");
+    //     return false;
+    // }
+    //
 
     /********************************************************************************
     * chang the code to make sure the order of the handle is suitable with the chain*
@@ -151,7 +151,7 @@ bool GPSBaxterPlugin::init(hardware_interface::VelocityJointInterface *robot, ro
 
     // Allocate torques array.
     active_arm_torques_.resize(active_arm_fk_chain_.getNrOfJoints());
-    passive_arm_torques_.resize(passive_arm_fk_chain_.getNrOfJoints());
+    // passive_arm_torques_.resize(passive_arm_fk_chain_.getNrOfJoints());
 
     // Initialize ROS subscribers/publishers, sensors, and position controllers.
     // Note that this must be done after the FK solvers are created, because the sensors
@@ -178,7 +178,7 @@ void GPSBaxterPlugin::starting(const ros::Time& time)
     }
 
     // Reset position controllers.
-    passive_arm_controller_->reset(last_update_time_);
+    // passive_arm_controller_->reset(last_update_time_);
     active_arm_controller_->reset(last_update_time_);
 
     // Reset trial controller, if any.
@@ -212,8 +212,8 @@ void GPSBaxterPlugin::update(const ros::Time& time, const ros::Duration& period)
     for (unsigned i = 0; i < active_arm_joint_state_.size(); i++)
         active_arm_joint_state_[i].setCommand(active_arm_torques_[i]);
 
-    for (unsigned i = 0; i < passive_arm_joint_state_.size(); i++)
-        passive_arm_joint_state_[i].setCommand(passive_arm_torques_[i]);
+    // for (unsigned i = 0; i < passive_arm_joint_state_.size(); i++)
+    //     passive_arm_joint_state_[i].setCommand(passive_arm_torques_[i]);
 }
 
 // Get current time.
@@ -225,14 +225,15 @@ ros::Time GPSBaxterPlugin::get_current_time() const
 // Get current encoder readings (robot-dependent).
 void GPSBaxterPlugin::get_joint_encoder_readings(Eigen::VectorXd &angles, gps::ActuatorType arm) const
 {
-    if (arm == gps::AUXILIARY_ARM)
-    {
-        if (angles.rows() != passive_arm_joint_state_.size())
-            angles.resize(passive_arm_joint_state_.size());
-        for (unsigned i = 0; i < angles.size(); i++)
-            angles(i) = passive_arm_joint_state_[i].getPosition();
-    }
-    else if (arm == gps::TRIAL_ARM)
+    // if (arm == gps::AUXILIARY_ARM)
+    // {
+    //     if (angles.rows() != passive_arm_joint_state_.size())
+    //         angles.resize(passive_arm_joint_state_.size());
+    //     for (unsigned i = 0; i < angles.size(); i++)
+    //         angles(i) = passive_arm_joint_state_[i].getPosition();
+    // }
+    // else
+      if (arm == gps::TRIAL_ARM)
     {
         if (angles.rows() != active_arm_joint_state_.size())
             angles.resize(active_arm_joint_state_.size());

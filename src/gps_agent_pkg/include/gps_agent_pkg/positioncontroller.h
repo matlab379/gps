@@ -10,7 +10,12 @@ space.
 // Superclass.
 #include "gps_agent_pkg/controller.h"
 #include "gps/proto/gps.pb.h"
+#include <dynamic_reconfigure/server.h>
+#include <gps_agent_pkg/JointVelocityPIDConfig.h>
+#include <std_msgs/Float32.h>
+#include <realtime_tools/realtime_publisher.h>
 
+#define ros_publisher_ptr(X) boost::scoped_ptr<realtime_tools::RealtimePublisher<X> >
 namespace gps_control
 {
 
@@ -42,8 +47,16 @@ private:
     Eigen::VectorXd current_angle_velocities_;
     // Latest pose.
     Eigen::VectorXd current_pose_;
+    ros_publisher_ptr(std_msgs::Float32) error_s0_pub;
+    ros_publisher_ptr(std_msgs::Float32) error_s1_pub;
+    ros_publisher_ptr(std_msgs::Float32) error_e0_pub;
+    ros_publisher_ptr(std_msgs::Float32) error_e1_pub;
+    ros_publisher_ptr(std_msgs::Float32) error_w0_pub;
+    ros_publisher_ptr(std_msgs::Float32) error_w1_pub;
+    ros_publisher_ptr(std_msgs::Float32) error_w2_pub;
 
     //Eigen::VectorXd torques_;
+    //
 
     // Current mode.
     gps::PositionControlMode mode_;
@@ -53,6 +66,9 @@ private:
     ros::Time start_time_;
     // Time of last update.
     ros::Time last_update_time_;
+    boost::scoped_ptr< dynamic_reconfigure::Server<gps_agent_pkg::JointVelocityPIDConfig> > srv_;
+    dynamic_reconfigure::Server<gps_agent_pkg::JointVelocityPIDConfig>::CallbackType callbackType_;
+    bool config_update;
 public:
     // Constructor.
     PositionController(ros::NodeHandle& n, gps::ActuatorType arm, int size);
@@ -68,6 +84,8 @@ public:
     virtual void reset(ros::Time update_time);
     // Should this report when position achieved?
     bool report_waiting;
+    void callback(gps_agent_pkg::JointVelocityPIDConfig &config, uint32_t level);
+    void update_pid(gps_agent_pkg::JointVelocityPIDConfig &config);
 };
 
 }

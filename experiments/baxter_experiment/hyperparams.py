@@ -11,6 +11,7 @@ from gps.agent.ros.agent_ros import AgentROS
 from gps.algorithm.algorithm_badmm import AlgorithmBADMM
 from gps.algorithm.cost.cost_fk import CostFK
 from gps.algorithm.cost.cost_action import CostAction
+from gps.algorithm.cost.cost_rotation import CostRot
 from gps.algorithm.cost.cost_sum import CostSum
 from gps.algorithm.cost.cost_utils import RAMP_LINEAR, RAMP_FINAL_ONLY
 from gps.algorithm.dynamics.dynamics_lr_prior import DynamicsLRPrior
@@ -22,18 +23,19 @@ from gps.algorithm.policy.policy_prior_gmm import PolicyPriorGMM
 from gps.gui.target_setup_gui import load_pose_from_npz
 from gps.proto.gps_pb2 import JOINT_ANGLES, JOINT_VELOCITIES, \
         END_EFFECTOR_POINTS, END_EFFECTOR_POINT_VELOCITIES, ACTION, \
-        TRIAL_ARM, AUXILIARY_ARM, JOINT_SPACE, NO_CONTROL
+        TRIAL_ARM, AUXILIARY_ARM, JOINT_SPACE, NO_CONTROL, END_EFFECTOR_ROTATIONS_Q
 from gps.utility.general_utils import get_ee_points
+from Quaternion import Quat
 
 
-EE_POINTS = np.array([[0.02, -0.025, 0.05], [0.02, -0.025, 0.05],
-                      [0.02, 0.05, 0.0]])
+EE_POINTS = np.array([[0.02, -0.025, 0.05]])
 
 SENSOR_DIMS = {
     JOINT_ANGLES: 7,
     JOINT_VELOCITIES: 7,
-    END_EFFECTOR_POINTS: 3 * EE_POINTS.shape[0],
-    END_EFFECTOR_POINT_VELOCITIES: 3 * EE_POINTS.shape[0],
+    END_EFFECTOR_POINTS: 3,
+    END_EFFECTOR_POINT_VELOCITIES: 3,
+    END_EFFECTOR_ROTATIONS_Q: 3,
     ACTION: 7,
 }
 
@@ -54,6 +56,7 @@ common = {
 
 x0s = []
 ee_tgts = []
+ee_rot_q_tgts = []
 reset_conditions = []
 
 # Set up each condition.
@@ -69,11 +72,13 @@ for i in xrange(common['conditions']):
         common['target_filename'], 'trial_arm', str(i), 'target'
     )
 
-    x0 = np.zeros(32)
-    x0[:7] = ja_x0
-    x0[14:(14+9)] = np.ndarray.flatten(
+    x0 = np.zeros(9)
+    #x0[:7] = ja_x0
+    x0[:3] = np.ndarray.flatten(
         get_ee_points(EE_POINTS, ee_pos_x0, ee_rot_x0).T
     )
+    quat_x0 = Quat(ee_rot_x0[0])
+    x0[3:(3+3)] = quat_x0.q[:3]
 
     ee_tgt = np.ndarray.flatten(
         get_ee_points(EE_POINTS, ee_pos_tgt, ee_rot_tgt).T
@@ -81,11 +86,13 @@ for i in xrange(common['conditions']):
 
     # aux_x0 = np.zeros(7)
     # aux_x0[:] = ja_aux
+    quat = Quat(ee_rot_tgt[0])
+    ee_rot_q_tgt = quat.q[:3]
 
     reset_condition = {
         TRIAL_ARM: {
             'mode': JOINT_SPACE,
-            'data': x0[0:7],
+            'data': ja_x0[0:7],
         },
         # AUXILIARY_ARM: {
         #     'mode': JOINT_SPACE,
@@ -95,6 +102,7 @@ for i in xrange(common['conditions']):
 
     x0s.append(x0)
     ee_tgts.append(ee_tgt)
+    ee_rot_q_tgts.append(ee_rot_q_tgt)
     reset_conditions.append(reset_condition)
 
 if not os.path.exists(common['data_files_dir']):
@@ -107,12 +115,13 @@ agent = {
     'T': 100,
     'x0': x0s,
     'ee_points_tgt': ee_tgts,
+    'ee_rotation_q_tgt': ee_rot_q_tgts,
     'reset_conditions': reset_conditions,
     'sensor_dims': SENSOR_DIMS,
-    'state_include': [JOINT_ANGLES, JOINT_VELOCITIES, END_EFFECTOR_POINTS,
+    'state_include': [ END_EFFECTOR_POINTS,END_EFFECTOR_ROTATIONS_Q,
                       END_EFFECTOR_POINT_VELOCITIES],
     'end_effector_points': EE_POINTS,
-    'obs_include': [JOINT_ANGLES, JOINT_VELOCITIES, END_EFFECTOR_POINTS,
+    'obs_include': [ END_EFFECTOR_POINTS,END_EFFECTOR_ROTATIONS_Q,
                     END_EFFECTOR_POINT_VELOCITIES],
 }
 
@@ -151,6 +160,7 @@ algorithm['init_traj_distr'] = {
 }
 
 torque_cost = {
+
     'type': CostAction,
     'wu': 5e-3 / PR2_GAINS,
 }
@@ -176,10 +186,28 @@ fk_cost2 = {
     'ramp_option': RAMP_FINAL_ONLY,
 }
 
+rot_cost1 = {
+    'type': CostRot,
+    'target_end_effector_rot': np.zeros(3 * EE_POINTS.shape[0]),
+    'wp': np.ones(SENSOR_DIMS[END_EFFECTOR_POINTS]),
+    'l1': 0.1,
+    'l2': 0.0001,
+    'ramp_option': RAMP_LINEAR,
+}
+rot_cost2 = {
+    'type': CostRot,
+    'target_end_effector_rot': np.zeros(3 * EE_POINTS.shape[0]),
+    'wp': np.ones(SENSOR_DIMS[END_EFFECTOR_POINTS]),
+    'l1': 1.0,
+    'l2': 0.0,
+    'wp_final_multiplier': 10.0,  # Weight multiplier on final timestep.
+    'ramp_option': RAMP_FINAL_ONLY,
+}
+
 algorithm['cost'] = {
     'type': CostSum,
-    'costs': [torque_cost, fk_cost1, fk_cost2],
-    'weights': [1.0, 1.0, 1.0],
+    'costs': [torque_cost, fk_cost1, fk_cost2, rot_cost1, rot_cost2],
+    'weights': [1.5, 1.0, 1.0, 1.0, 1.0],
 }
 
 algorithm['dynamics'] = {

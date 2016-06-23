@@ -11,6 +11,7 @@ Joint encoder sensor: returns joint angles and, optionally, their velocities.
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Dense>
+#include <Eigen/Geometry>
 
 #include "gps/proto/gps.pb.h"
 
@@ -63,6 +64,9 @@ private:
     Eigen::MatrixXd previous_end_effector_points_;
     // End-effector points target.
     Eigen::MatrixXd end_effector_points_target_;
+    // End-effector rotations target.
+    Eigen::MatrixXd end_effector_rotations_q_target_;
+    Eigen::MatrixXd previous_effector_rotations_q_;
     // Velocities of points.
     Eigen::MatrixXd previous_end_effector_point_velocities_;
     // Temporary storage.

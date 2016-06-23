@@ -170,6 +170,8 @@ class AgentROS(Agent):
         trial_command.ee_points = ee_points.reshape(ee_points.size).tolist()
         trial_command.ee_points_tgt = \
                 self._hyperparams['ee_points_tgt'][condition].tolist()
+        trial_command.ee_rotations_q_tgt = \
+            self._hyperparams['ee_rotation_q_tgt'][condition].tolist()
         trial_command.state_datatypes = self._hyperparams['state_include']
         trial_command.obs_datatypes = self._hyperparams['state_include']
 

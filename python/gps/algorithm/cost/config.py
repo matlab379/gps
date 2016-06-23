@@ -45,3 +45,15 @@ COST_SUM = {
 COST_ACTION = {
     'wu': np.array([]),  # Torque penalties, must be 1 x dU numpy array.
 }
+
+COST_ROT = {
+    'ramp_option': RAMP_CONSTANT,  # How target cost ramps over time.
+    'wp': None,  # State weights - must be set.
+    'wp_final_multiplier': 1.0,  # Weight multiplier on final time step.
+    'env_target': True,  # TODO - This isn't used.
+    'l1': 0.0,
+    'l2': 1.0,
+    'alpha': 1e-5,
+    'target_end_effector_rot': None,  # Target end-effector position.
+    'evalnorm': evallogl2term,
+}

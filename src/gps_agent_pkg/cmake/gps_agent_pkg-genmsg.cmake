@@ -600,7 +600,7 @@ add_dependencies(gps_agent_pkg_generate_messages_lisp sensor_msgs_generate_messa
 add_dependencies(gps_agent_pkg_generate_messages_lisp std_msgs_generate_messages_lisp)
 
 if(genpy_INSTALL_DIR AND EXISTS ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/gps_agent_pkg)
-  install(CODE "execute_process(COMMAND \"/home/yhchen/anaconda2/bin/python\" -m compileall \"${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/gps_agent_pkg\")")
+  install(CODE "execute_process(COMMAND \"/home/yhchen/.pyenv/versions/anaconda2-4.0.0/bin/python\" -m compileall \"${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/gps_agent_pkg\")")
   # install generated code
   install(
     DIRECTORY ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/gps_agent_pkg

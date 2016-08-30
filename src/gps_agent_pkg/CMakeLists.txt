@@ -79,8 +79,8 @@ include_directories(${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
 catkin_package(
 
  INCLUDE_DIRS include
- LIBRARIES
-  gps_agent_lib
+#  LIBRARIES
+  # gps_agent_lib
  CATKIN_DEPENDS
   std_msgs
   sensor_msgs
@@ -157,6 +157,7 @@ add_library(gps_agent_lib
               src/baxter_control/baxterplugin.cpp
               src/baxter_control/chain.cpp)
 target_link_libraries(gps_agent_lib ${catkin_LIBRARIES} ${Caffe_LIBRARIES} protobuf ${Boost_LIBRARIES})
+add_dependencies(gps_agent_lib ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg) # don't build until necessary msgs are finished
 
 add_library(baxter_utilities src/baxter_control/baxter_utilities.cpp)
 target_link_libraries(baxter_utilities ${catkin_LIBRARIES} ${Boost_LIBRARIES})
@@ -176,7 +177,7 @@ target_link_libraries(baxter_hardware_interface
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
 )
-add_dependencies(baxter_hardware_interface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg) # don't build until necessary msgs are finish
+add_dependencies(baxter_hardware_interface ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg) # don't build until necessary msgs are finish
 
 
 

@@ -28,15 +28,15 @@ EncoderSensor::EncoderSensor(ros::NodeHandle& n, RobotPlugin *plugin, gps::Actua
     // Allocate space for end effector points
     n_points_ = 1;
     previous_end_effector_points_.resize(3,1);
-    previous_effector_rotations_q_.resize(3,1);
+    // previous_effector_rotations_q_.resize(3,1);
     previous_end_effector_point_velocities_.resize(3,1);
     temp_end_effector_points_.resize(3,1);
     end_effector_points_.resize(3,1);
     end_effector_points_.fill(0.0);
     end_effector_points_target_.resize(3,1);
     end_effector_points_target_.fill(0.0);
-    end_effector_rotations_q_target_.resize(3,1);
-    end_effector_rotations_q_target_.fill(0.0);
+    // end_effector_rotations_q_target_.resize(3,1);
+    // end_effector_rotations_q_target_.fill(0.0);
 
 
     // Resize point jacobians
@@ -127,10 +127,10 @@ void EncoderSensor::update(RobotPlugin *plugin, ros::Time current_time, bool is_
         // Subtract the target end effector points so that the goal is always zero
         temp_end_effector_points_ -= end_effector_points_target_;
         // Subtract the target end effector rotations so that the goal is always zero(Brook)
-        Eigen::Quaterniond quat_temp(previous_rotation_);
-        previous_effector_rotations_q_ = quat_temp.vec();
+        // Eigen::Quaterniond quat_temp(previous_rotation_);
+        // previous_effector_rotations_q_ = quat_temp.vec();
 
-        previous_effector_rotations_q_ -= end_effector_rotations_q_target_;
+        // previous_effector_rotations_q_ -= end_effector_rotations_q_target_;
 
         // Compute velocities.
         // Note that we can't assume the last angles are actually from one step ago, so we check first.
@@ -195,19 +195,19 @@ void EncoderSensor::configure_sensor(OptionsMap &options)
         ROS_ERROR("Got %d ee_points_tgt (must match ee_points size: %d)",
                   n_points_target_, n_points_);
     }
-    //configure the  ee_rotations_tgt_(Brook)
-    end_effector_rotations_q_target_ = boost::get<Eigen::MatrixXd>(options["ee_rotations_tgt_q"]).transpose();
-    int n_rot_points_target_ = end_effector_rotations_q_target_.cols();
-    if( end_effector_rotations_q_target_.rows() != 3){
-        ROS_ERROR("EE rotation q tgt has more than 3 coordinates: Shape=(%d,%d)",
-                (int)end_effector_rotations_q_target_.rows(),
-                (int)end_effector_rotations_q_target_.cols());
-    }
-    if(n_points_ != n_rot_points_target_){
-        ROS_ERROR("Got %d ee_rotations_q_tgt (must match ee_points size: %d)",
-                  n_rot_points_target_, n_points_);
-    }
-    previous_effector_rotations_q_.resize(3,n_points_);
+    // //configure the  ee_rotations_tgt_(Brook)
+    // end_effector_rotations_q_target_ = boost::get<Eigen::MatrixXd>(options["ee_rotations_tgt_q"]).transpose();
+    // int n_rot_points_target_ = end_effector_rotations_q_target_.cols();
+    // if( end_effector_rotations_q_target_.rows() != 3){
+    //     ROS_ERROR("EE rotation q tgt has more than 3 coordinates: Shape=(%d,%d)",
+    //             (int)end_effector_rotations_q_target_.rows(),
+    //             (int)end_effector_rotations_q_target_.cols());
+    // }
+    // if(n_points_ != n_rot_points_target_){
+    //     ROS_ERROR("Got %d ee_rotations_q_tgt (must match ee_points size: %d)",
+    //               n_rot_points_target_, n_points_);
+    // }
+    // previous_effector_rotations_q_.resize(3,n_points_);
     previous_end_effector_points_.resize(3, n_points_);
     previous_end_effector_point_velocities_.resize(3, n_points_);
     temp_end_effector_points_.resize(3, n_points_);
@@ -251,10 +251,10 @@ void EncoderSensor::set_sample_data_format(boost::scoped_ptr<Sample>& sample)
     OptionsMap eerot_metadata;
     sample->set_meta_data(gps::END_EFFECTOR_ROTATIONS,3,3,SampleDataFormatEigenMatrix,eerot_metadata);
 
-    // Set end effector rotation  q size and format.
-    OptionsMap eerot_quat_metadata;
-    sample->set_meta_data(gps::END_EFFECTOR_ROTATIONS_Q,previous_effector_rotations_q_.cols()*previous_effector_rotations_q_.rows(),SampleDataFormatEigenVector,eerot_quat_metadata);
-
+    // // Set end effector rotation  q size and format.
+    // OptionsMap eerot_quat_metadata;
+    // sample->set_meta_data(gps::END_EFFECTOR_ROTATIONS_Q,previous_effector_rotations_q_.cols()*previous_effector_rotations_q_.rows(),SampleDataFormatEigenVector,eerot_quat_metadata);
+    //
     // Set jacobian size and format.
     OptionsMap eejac_metadata;
     sample->set_meta_data(gps::END_EFFECTOR_JACOBIANS,previous_jacobian_.rows(),previous_jacobian_.cols(),SampleDataFormatEigenMatrix,eejac_metadata);
@@ -288,7 +288,7 @@ void EncoderSensor::set_sample_data(boost::scoped_ptr<Sample>& sample, int t)
     sample->set_data_vector(t,gps::END_EFFECTOR_ROTATIONS,previous_rotation_.data(),3,3,SampleDataFormatEigenMatrix);
 
     // Set end effector rotation q.
-    sample->set_data_vector(t,gps::END_EFFECTOR_ROTATIONS_Q,previous_effector_rotations_q_.data(),previous_effector_rotations_q_.cols()*previous_effector_rotations_q_.rows(),SampleDataFormatEigenVector);
+    // sample->set_data_vector(t,gps::END_EFFECTOR_ROTATIONS_Q,previous_effector_rotations_q_.data(),previous_effector_rotations_q_.cols()*previous_effector_rotations_q_.rows(),SampleDataFormatEigenVector);
 
     // Set end effector jacobian.
     sample->set_data_vector(t,gps::END_EFFECTOR_JACOBIANS,previous_jacobian_.data(),previous_jacobian_.rows(),previous_jacobian_.cols(),SampleDataFormatEigenMatrix);
